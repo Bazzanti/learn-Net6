@@ -1,0 +1,22 @@
+﻿USE [FormazioneNET6]
+GO
+
+/****** Object:  Table [dbo].[TB_EMPLOYEE]    Script Date: 23/11/2021 10:23:30 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[TB_EMPLOYEE](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Code] [nvarchar](50) NULL,
+	[Name] [nvarchar](128) NOT NULL,
+	[Surname] [nvarchar](128) NULL,
+	[Ufficio] [nvarchar](128) NULL,
+ CONSTRAINT [Employee] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
