@@ -1,10 +1,26 @@
 using FormazioneNET6;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<EmployeeContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("FormazioneNET6")));
-//builder.Services.AddSwaggerGen();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(setup => setup.SwaggerDoc("v1", new OpenApiInfo()
+{
+    Description = "Formazione .NET 6 Web api - Minimal Api in Asp.Net Core",
+    Title = "Formazione .NET 6 Api",
+    Version = "v1",
+}));
+
 var app = builder.Build();
+
+if (builder.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UseSwagger();
 
 //GET LIST
 app.MapGet("/api/employees", async (EmployeeContext db) => await db.Employees.ToListAsync());
@@ -26,7 +42,12 @@ app.MapPut("/api/employees", async (EmployeeContext db, Employee employee) =>
     var existingEmployee = await db.Employees.FindAsync(employee.Id);
     if (existingEmployee == null) return Results.BadRequest();
 
-    db.Update(employee);
+    existingEmployee.Name = employee.Name;
+    existingEmployee.Surname = employee.Surname;
+    existingEmployee.Code = employee.Code;
+    existingEmployee.Ufficio = employee.Ufficio;
+
+    db.Update(existingEmployee);
     await db.SaveChangesAsync();
 
     return Results.NoContent();
@@ -44,11 +65,11 @@ app.MapDelete("/api/employees/{id}", async (EmployeeContext db, int id) =>
     return Results.NoContent();
 });
 
-if (builder.Environment.IsDevelopment())
+app.UseSwaggerUI(c =>
 {
-    app.UseDeveloperExceptionPage();
-    //app.UseSwagger();
-    //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TodoApi v1"));
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Formazione Api v1");
+    c.RoutePrefix = string.Empty;
+});
+
 
 app.Run();
